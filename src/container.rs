@@ -1,25 +1,27 @@
 use crate::{
     domain::{
         repositories::{
-            permission::PermissionRepository, role::RoleRepository,
-            role_permission::RolePermissionRepository, todo::TodoRepository, user::UserRepository,
+            permission::PermissionRepository, refresh_token::RefreshTokenRepository,
+            role::RoleRepository, role_permission::RolePermissionRepository, todo::TodoRepository,
+            user::UserRepository,
         },
         services::{
-            permission::PermissionService, role::RoleService,
+            permission::PermissionService, refresh_token::RefreshTokenService, role::RoleService,
             role_permission::RolePermissionService, todo::TodoService, user::UserService,
         },
     },
     infrastructure::{
         databases::postgresql::db_pool,
         repositories::{
-            permission::PermissionDieselRepository, role::RoleDieselRepository,
-            role_permission::RolePermissionDieselRepository, todo::TodoDieselRepository,
-            user::UserDieselRepository,
+            permission::PermissionDieselRepository, refresh_token::RefreshTokenDieselRepository,
+            role::RoleDieselRepository, role_permission::RolePermissionDieselRepository,
+            todo::TodoDieselRepository, user::UserDieselRepository,
         },
     },
     services::{
-        permission::PermissionServiceImpl, role::RoleServiceImpl,
-        role_permission::RolePermissionServiceImpl, todo::TodoServiceImpl, user::UserServiceImpl,
+        permission::PermissionServiceImpl, refresh_token::RefreshTokenServiceImpl,
+        role::RoleServiceImpl, role_permission::RolePermissionServiceImpl, todo::TodoServiceImpl,
+        user::UserServiceImpl,
     },
 };
 use std::sync::Arc;
@@ -30,6 +32,7 @@ pub struct Container {
     pub permission_service: Arc<dyn PermissionService>,
     pub role_permission_service: Arc<dyn RolePermissionService>,
     pub user_service: Arc<dyn UserService>,
+    pub token_service: Arc<dyn RefreshTokenService>,
 }
 
 impl Container {
@@ -66,12 +69,19 @@ impl Container {
             repository: todo_service,
         });
 
+        let token_service: Arc<dyn RefreshTokenRepository> =
+            Arc::new(RefreshTokenDieselRepository::new(pool.clone()));
+        let token_service = Arc::new(RefreshTokenServiceImpl {
+            repository: token_service,
+        });
+
         Container {
             role_permission_service,
             role_service,
             permission_service,
             todo_service,
             user_service,
+            token_service,
         }
     }
 }

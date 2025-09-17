@@ -27,6 +27,7 @@ pub fn create_app(
     let role_service = container.role_service.clone();
     let role_permission_service = container.role_permission_service.clone();
     let user_service = container.user_service.clone();
+    let token_service = container.token_service.clone();
 
     let logger = log_format_config();
 
@@ -36,6 +37,7 @@ pub fn create_app(
         .app_data(web::Data::from(role_permission_service.clone()))
         .app_data(web::Data::from(todo_service.clone()))
         .app_data(web::Data::from(user_service.clone()))
+        .app_data(web::Data::from(token_service.clone()))
         .wrap(logger)
         .configure(permission_config)
         .configure(user_config)
