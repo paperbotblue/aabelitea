@@ -1,6 +1,6 @@
 use crate::api::controllers::user_handler::{
     create_user_handler, delete_user_handler, get_user_handler, list_users_handler,
-    update_user_handler,
+    login_user_handler, update_user_handler,
 };
 
 use actix_web::{
@@ -20,6 +20,7 @@ pub fn user_config(cfg: &mut ServiceConfig) {
                     .route(web::post().to(create_user_handler))
                     .route(web::get().to(list_users_handler)),
             )
+            .service(web::resource("/login").route(web::post().to(login_user_handler)))
             .service(web::resource("/update").route(web::post().to(update_user_handler)))
             .service(
                 web::resource("/{id}")

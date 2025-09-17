@@ -1,7 +1,10 @@
 use async_trait::async_trait;
+use sha2::{Digest, Sha256};
 use std::sync::Arc;
 use uuid::Uuid;
 
+use crate::api::dto::user::LoginDTO;
+use crate::domain::constants;
 use crate::domain::errors::user_errors::UserError;
 use crate::domain::models::user::{CreateUser, UpdateUser, User};
 use crate::domain::repositories::repository::ResultPaging;
@@ -22,31 +25,25 @@ impl UserServiceImpl {
 
 #[async_trait]
 impl UserService for UserServiceImpl {
-    async fn create(&self, item: CreateUser) -> Result<User, UserError> {
-        match self.repository.get_by_email(item.email.clone()).await {
-            Ok(Some(_)) => return Err(UserError::UserAlreadyExistsEmail),
-            Ok(None) => {}
-            Err(err) => return Err(UserError::InternalServerError(err)),
-        };
-
-        if let Some(phone_number) = item.phone_number.clone() {
-            match self.repository.get_by_phone_number(phone_number).await {
-                Ok(Some(_)) => return Err(UserError::UserAlreadyExistsPhoneNumber),
-                Ok(None) => {}
-                Err(err) => return Err(UserError::InternalServerError(err)),
-            }
-        }
-
-        if let Some(username) = item.username.clone() {
-            match self.repository.get_by_username(username).await {
-                Ok(Some(_)) => return Err(UserError::UserAlreadyExistsPhoneNumber),
-                Ok(None) => {}
-                Err(err) => return Err(UserError::InternalServerError(err)),
-            }
-        }
+    async fn create(&self, mut item: CreateUser) -> Result<User, UserError> {
+        item.password_hash = self.hash_password(&item.password_hash);
 
         match self.repository.create(&item).await {
             Ok(item) => Ok(item),
+            Err(err) => Err(UserError::InternalServerError(err)),
+        }
+    }
+
+    async fn login(&self, item: LoginDTO) -> Result<User, UserError> {
+        match self.repository.get_by_email(item.email.clone()).await {
+            Ok(Some(user)) => {
+                if self.verify_password(&item.password, &user.password_hash) {
+                    Ok(user)
+                } else {
+                    Err(UserError::UserNotAuthorised)
+                }
+            }
+            Ok(None) => Err(UserError::UserDoesNotExist),
             Err(err) => Err(UserError::InternalServerError(err)),
         }
     }
@@ -78,5 +75,17 @@ impl UserService for UserServiceImpl {
             Ok(item) => Ok(item),
             Err(err) => Err(UserError::InternalServerError(err)),
         }
+    }
+
+    fn hash_password(&self, token: &str) -> String {
+        let secret_key = "12345678";
+        let token_with_key = format!("{}:{}", token, secret_key);
+        let mut hasher = Sha256::new();
+        hasher.update(token_with_key.as_bytes());
+        hex::encode(hasher.finalize())
+    }
+
+    fn verify_password(&self, password: &str, password_hash: &str) -> bool {
+        self.hash_password(password) == password_hash
     }
 }

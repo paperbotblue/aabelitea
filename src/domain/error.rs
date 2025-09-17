@@ -1,11 +1,27 @@
-use actix_web::{http::StatusCode, HttpResponse};
+use actix_web::{http::StatusCode, HttpResponse, Responder};
 use serde::Serialize;
+use serde_json::json;
 use uuid::Error as UuidError;
 
 #[derive(Debug, Serialize)]
 pub struct ApiError {
     pub message: String,
     pub code: u16,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ApiResponse<T: Serialize>(pub T);
+impl<T: Serialize> Responder for ApiResponse<T> {
+    type Body = actix_web::body::BoxBody;
+
+    fn respond_to(self, _req: &actix_web::HttpRequest) -> HttpResponse<Self::Body> {
+        HttpResponse::Ok().json(json!({
+            "data": self.0,
+            "msg": "",
+            "success": true,
+            "statusCode": 200
+        }))
+    }
 }
 
 impl std::fmt::Display for ApiError {
@@ -27,8 +43,13 @@ impl actix_web::ResponseError for ApiError {
     fn status_code(&self) -> StatusCode {
         StatusCode::from_u16(self.code).unwrap()
     }
-    fn error_response(&self) -> actix_web::HttpResponse {
-        HttpResponse::build(self.status_code()).json(&self.message)
+    fn error_response(&self) -> HttpResponse {
+        HttpResponse::build(self.status_code()).json(json!({
+            "data": {},
+            "msg": self.message,
+            "success": false,
+            "status_code": self.code
+        }))
     }
 }
 

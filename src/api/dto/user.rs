@@ -5,6 +5,12 @@ use uuid::Uuid;
 
 use super::validators::user::validate_user_fields;
 
+#[derive(Serialize, Deserialize)]
+pub struct LoginDTO {
+    pub email: String,
+    pub password: String,
+}
+
 #[derive(Serialize)]
 pub struct CreateUserDTO {
     pub email: String,
