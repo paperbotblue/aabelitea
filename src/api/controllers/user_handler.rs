@@ -32,10 +32,12 @@ pub async fn create_user_handler(
 
 pub async fn login_user_handler(
     user_service: web::Data<dyn UserService>,
+    user_address_service: web::Data<dyn UserAddressService>,
     refresh_token_service: web::Data<dyn RefreshTokenService>,
     post_data: web::Json<LoginDTO>,
 ) -> Result<HttpResponse, ApiError> {
     let user = user_service.login(post_data.into_inner()).await?;
+    let user_address = user_address_service.get_by_user_id(user.id).await?;
     let raw_token = refresh_token_service.create_raw_token();
     refresh_token_service
         .create_new_user_refresh_token(user.id, raw_token)
@@ -50,7 +52,8 @@ pub async fn login_user_handler(
     let res = HttpResponse::Ok().cookie(cookie).json(serde_json::json!({
         "data": {
             "access_token": jwt_token,
-            "user_data": UserDTO::from(user)
+            "user_data": UserDTO::from(user),
+            "user_address": user_address
         },
         "success": true,
         "statusCode": 200,
