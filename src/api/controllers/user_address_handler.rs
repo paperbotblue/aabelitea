@@ -26,6 +26,7 @@ pub async fn update_user_address_handler(
     post_data: web::Json<UpdateUserAddressDTO>,
     claims: JwtClaims,
 ) -> Result<web::Json<UserAddressDTO>, ApiError> {
+    println!("----------");
     let user_address = user_address_service
         .get_by_user_id(Uuid::from_str(&claims.sub)?)
         .await?;
