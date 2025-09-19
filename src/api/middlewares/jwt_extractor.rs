@@ -24,10 +24,10 @@ pub async fn check_permission_middleware(
     let claims = token_service.verify_jwt(&token).map_err(ApiError::from)?;
 
     let user_role = claims.role.clone();
-    role_service
-        .check_permission(&user_role, permission)
-        .await
-        .map_err(ApiError::from)?;
+    // role_service
+    //     .check_permission(&user_role, permission)
+    //     .await
+    //     .map_err(ApiError::from)?;
 
     req.extensions_mut().insert(claims);
 
