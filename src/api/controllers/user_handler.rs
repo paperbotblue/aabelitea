@@ -4,16 +4,29 @@ use uuid::Uuid;
 
 use crate::api::dto::user::{CreateUserDTO, LoginDTO, UpdateUserDTO, UserDTO};
 use crate::domain::error::{ApiError, ApiResponse};
+use crate::domain::models::user_address::CreateUserAddress;
 use crate::domain::repositories::repository::ResultPaging;
 use crate::domain::repositories::user::UserQueryParams;
 use crate::domain::services::refresh_token::RefreshTokenService;
 use crate::domain::services::user::UserService;
+use crate::domain::services::user_address::UserAddressService;
 
 pub async fn create_user_handler(
     user_service: web::Data<dyn UserService>,
+    user_address_service: web::Data<dyn UserAddressService>,
     post_data: web::Json<CreateUserDTO>,
 ) -> Result<ApiResponse<UserDTO>, ApiError> {
     let user = user_service.create(post_data.into_inner().into()).await?;
+    let _ = user_address_service
+        .create(CreateUserAddress {
+            user_id: user.id,
+            state: None,
+            city: None,
+            house_no: None,
+            pincode: None,
+            area: None,
+        })
+        .await?;
     Ok(ApiResponse(user.into()))
 }
 

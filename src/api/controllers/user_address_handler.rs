@@ -5,6 +5,8 @@ use uuid::Uuid;
 
 use crate::api::dto::user_address::{CreateUserAddressDTO, UpdateUserAddressDTO, UserAddressDTO};
 use crate::domain::error::ApiError;
+use crate::domain::models::refresh_token::JwtClaims;
+use crate::domain::models::user_address::UpdateUserAddress;
 use crate::domain::repositories::repository::ResultPaging;
 use crate::domain::repositories::user_address::UserAddressQueryParams;
 use crate::domain::services::user_address::UserAddressService;
@@ -22,9 +24,22 @@ pub async fn create_user_address_handler(
 pub async fn update_user_address_handler(
     user_address_service: web::Data<dyn UserAddressService>,
     post_data: web::Json<UpdateUserAddressDTO>,
+    claims: web::Json<JwtClaims>,
 ) -> Result<web::Json<UserAddressDTO>, ApiError> {
     let user_address = user_address_service
-        .update(post_data.into_inner().into())
+        .get_by_user_id(Uuid::from_str(&claims.sub)?)
+        .await?;
+
+    let user_address = user_address_service
+        .update(UpdateUserAddress {
+            id: user_address.id,
+            user_id: user_address.user_id,
+            state: user_address.state,
+            city: user_address.city,
+            pincode: user_address.pincode,
+            house_no: user_address.house_no,
+            area: user_address.area,
+        })
         .await?;
     Ok(web::Json(user_address.into()))
 }

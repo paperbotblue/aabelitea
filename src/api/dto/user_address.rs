@@ -17,8 +17,6 @@ pub struct CreateUserAddressDTO {
 
 #[derive(Serialize)]
 pub struct UpdateUserAddressDTO {
-    pub id: Uuid,
-    pub user_id: Uuid,
     pub state: Option<String>,
     pub city: Option<String>,
     pub pincode: Option<String>,
@@ -75,15 +73,9 @@ impl<'de> Deserialize<'de> for UpdateUserAddressDTO {
     {
         let raw = RawUserAddressDTO::deserialize(deserializer)?;
 
-        let id = raw
-            .id
-            .ok_or_else(|| D::Error::custom("ID is required for update"))?;
-
         validate_user_address_fields::<D>()?;
 
         Ok(UpdateUserAddressDTO {
-            id,
-            user_id: raw.user_id,
             state: raw.state,
             city: raw.city,
             pincode: raw.pincode,

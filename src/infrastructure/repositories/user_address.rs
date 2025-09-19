@@ -89,6 +89,20 @@ impl UserAddressRepository for UserAddressDieselRepository {
         .map(|opt| opt.map(|v| v.into())) // map over Option
     }
 
+    async fn get_by_user_id(&self, user_id: Uuid) -> RepositoryResult<Option<UserAddress>> {
+        use crate::infrastructure::schema::user_addresses::dsl::{user_addresses, user_id as uid};
+        let mut conn = self.pool.get().unwrap();
+        run(move || {
+            user_addresses
+                .filter(uid.eq(user_id))
+                .first::<UserAddressDiesel>(&mut conn)
+                .optional()
+        })
+        .await
+        .map_err(|e| DieselRepositoryError::from(e).into_inner())
+        .map(|opt| opt.map(|v| v.into())) // map over Option
+    }
+
     async fn delete(&self, item_id: Uuid) -> RepositoryResult<()> {
         use crate::infrastructure::schema::user_addresses::dsl::{id, user_addresses};
         let mut conn = self.pool.get().unwrap();

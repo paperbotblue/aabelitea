@@ -1,9 +1,9 @@
-use std::sync::Arc;
 use async_trait::async_trait;
+use std::sync::Arc;
 use uuid::Uuid;
 
-use crate::domain::errors::user_address_errors::UserAddressError ;
-use crate::domain::models::user_address::{CreateUserAddress, UserAddress, UpdateUserAddress};
+use crate::domain::errors::user_address_errors::UserAddressError;
+use crate::domain::models::user_address::{CreateUserAddress, UpdateUserAddress, UserAddress};
 use crate::domain::repositories::repository::ResultPaging;
 use crate::domain::repositories::user_address::UserAddressQueryParams;
 use crate::domain::repositories::user_address::UserAddressRepository;
@@ -22,49 +22,49 @@ impl UserAddressServiceImpl {
 
 #[async_trait]
 impl UserAddressService for UserAddressServiceImpl {
-    async fn create(&self, item: CreateUserAddress) -> Result<UserAddress, UserAddressError > {
-        match self.repository
-            .create(&item)
-            .await {
-              Ok(item) => Ok(item),
-              Err(err) => Err(UserAddressError::InternalServerError(err)),
-            }
+    async fn create(&self, item: CreateUserAddress) -> Result<UserAddress, UserAddressError> {
+        match self.repository.create(&item).await {
+            Ok(item) => Ok(item),
+            Err(err) => Err(UserAddressError::InternalServerError(err)),
+        }
     }
 
-    async fn update(&self, item: UpdateUserAddress) -> Result<UserAddress, UserAddressError > {
-        match self.repository
-            .update(&item)
-            .await {
-              Ok(item) => Ok(item),
-              Err(err) => Err(UserAddressError::InternalServerError(err)),
-            }
+    async fn update(&self, item: UpdateUserAddress) -> Result<UserAddress, UserAddressError> {
+        match self.repository.update(&item).await {
+            Ok(item) => Ok(item),
+            Err(err) => Err(UserAddressError::InternalServerError(err)),
+        }
     }
 
-    async fn list(&self, params: UserAddressQueryParams) -> Result<ResultPaging<UserAddress>, UserAddressError > {
-        match self.repository
-            .list(params)
-            .await {
-              Ok(item) => Ok(item),
-              Err(err) => Err(UserAddressError::InternalServerError(err)),
-            }
+    async fn list(
+        &self,
+        params: UserAddressQueryParams,
+    ) -> Result<ResultPaging<UserAddress>, UserAddressError> {
+        match self.repository.list(params).await {
+            Ok(item) => Ok(item),
+            Err(err) => Err(UserAddressError::InternalServerError(err)),
+        }
     }
 
-    async fn get(&self, item_id: Uuid) -> Result<UserAddress, UserAddressError > {
-        match self.repository
-            .get(item_id)
-            .await {
-              Ok(Some(item)) => Ok(item),
-              Ok(None) => Err(UserAddressError::UserAddressDoesNotExist),
-              Err(err) => Err(UserAddressError::InternalServerError(err)),
-            }
+    async fn get(&self, item_id: Uuid) -> Result<UserAddress, UserAddressError> {
+        match self.repository.get(item_id).await {
+            Ok(Some(item)) => Ok(item),
+            Ok(None) => Err(UserAddressError::UserAddressDoesNotExist),
+            Err(err) => Err(UserAddressError::InternalServerError(err)),
+        }
     }
 
-    async fn delete(&self, item_id: Uuid) -> Result<(), UserAddressError > {
-        match self.repository
-            .delete(item_id)
-            .await {
-              Ok(item) => Ok(item),
-              Err(err) => Err(UserAddressError::InternalServerError(err)),
-            }
+    async fn get_by_user_id(&self, user_id: Uuid) -> Result<UserAddress, UserAddressError> {
+        match self.repository.get_by_user_id(user_id).await {
+            Ok(Some(item)) => Ok(item),
+            Ok(None) => Err(UserAddressError::UserAddressDoesNotExist),
+            Err(err) => Err(UserAddressError::InternalServerError(err)),
+        }
+    }
+    async fn delete(&self, item_id: Uuid) -> Result<(), UserAddressError> {
+        match self.repository.delete(item_id).await {
+            Ok(item) => Ok(item),
+            Err(err) => Err(UserAddressError::InternalServerError(err)),
+        }
     }
 }

@@ -1,7 +1,7 @@
 use crate::{
-    api::dto::user_address::{CreateUserAddressDTO, UserAddressDTO, UpdateUserAddressDTO},
+    api::dto::user_address::{CreateUserAddressDTO, UpdateUserAddressDTO, UserAddressDTO},
     domain::{
-        models::user_address::{CreateUserAddress, UserAddress, UpdateUserAddress},
+        models::user_address::{CreateUserAddress, UpdateUserAddress, UserAddress},
         repositories::repository::ResultPaging,
     },
 };
@@ -33,20 +33,6 @@ impl From<CreateUserAddressDTO> for CreateUserAddress {
     }
 }
 
-impl From<UpdateUserAddressDTO> for UpdateUserAddress {
-    fn from(value: UpdateUserAddressDTO) -> Self {
-        Self {
-            id: value.id,
-            user_id: value.user_id,
-            state: value.state,
-            city: value.city,
-            pincode: value.pincode,
-            house_no: value.house_no,
-            area: value.area,
-        }
-    }
-}
-
 impl From<CreateUserAddress> for CreateUserAddressDTO {
     fn from(value: CreateUserAddress) -> Self {
         Self {
@@ -63,8 +49,6 @@ impl From<CreateUserAddress> for CreateUserAddressDTO {
 impl From<UpdateUserAddress> for UpdateUserAddressDTO {
     fn from(value: UpdateUserAddress) -> Self {
         Self {
-            id: value.id,
-            user_id: value.user_id,
             state: value.state,
             city: value.city,
             pincode: value.pincode,

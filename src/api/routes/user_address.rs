@@ -1,9 +1,9 @@
-use crate::api::controllers::user_address_handler::{
-    create_user_address_handler,
-    update_user_address_handler,
-    delete_user_address_handler,
-    get_user_address_handler,
-    list_user_addresss_handler,
+use crate::api::{
+    controllers::user_address_handler::{
+        create_user_address_handler, delete_user_address_handler, get_user_address_handler,
+        list_user_addresss_handler, update_user_address_handler,
+    },
+    middlewares::jwt_extractor::check_permission_middleware,
 };
 
 use actix_web::{
@@ -13,11 +13,11 @@ use actix_web::{
 
 pub fn user_address_config(cfg: &mut ServiceConfig) {
     cfg.service(
-        web::scope("/user_addresss")
+        web::scope("/user_addresses")
             // Uncomment if you need a middleware for this scope
-            // .wrap(from_fn(|req, next| async move {
-            //     check_permission_middleware(req, next, "admin").await
-            // }))
+            .wrap(from_fn(|req, next| async move {
+                check_permission_middleware(req, next, "user").await
+            }))
             .service(
                 web::resource("")
                     .route(web::post().to(create_user_address_handler))

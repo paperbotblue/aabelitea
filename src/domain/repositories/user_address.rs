@@ -25,9 +25,15 @@ impl QueryParams for UserAddressQueryParams {
 #[async_trait]
 pub trait UserAddressRepository: Send + Sync {
     async fn create(&self, new_user_address: &CreateUserAddress) -> RepositoryResult<UserAddress>;
-    async fn update(&self, update_user_address: &UpdateUserAddress) -> RepositoryResult<UserAddress>;
-    async fn list(&self, params: UserAddressQueryParams) -> RepositoryResult<ResultPaging<UserAddress>>;
+    async fn update(
+        &self,
+        update_user_address: &UpdateUserAddress,
+    ) -> RepositoryResult<UserAddress>;
+    async fn list(
+        &self,
+        params: UserAddressQueryParams,
+    ) -> RepositoryResult<ResultPaging<UserAddress>>;
     async fn get(&self, user_address_id: Uuid) -> RepositoryResult<Option<UserAddress>>;
+    async fn get_by_user_id(&self, user_id: Uuid) -> RepositoryResult<Option<UserAddress>>;
     async fn delete(&self, user_address_id: Uuid) -> RepositoryResult<()>;
 }
-
