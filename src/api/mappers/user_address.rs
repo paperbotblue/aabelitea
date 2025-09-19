@@ -1,3 +1,5 @@
+use uuid::Uuid;
+
 use crate::{
     api::dto::user_address::{CreateUserAddressDTO, UpdateUserAddressDTO, UserAddressDTO},
     domain::{
@@ -23,7 +25,8 @@ impl From<UserAddress> for UserAddressDTO {
 impl From<CreateUserAddressDTO> for CreateUserAddress {
     fn from(value: CreateUserAddressDTO) -> Self {
         Self {
-            user_id: value.user_id,
+            // TODO: this is gonna cause issues down the line
+            user_id: Uuid::new_v4(),
             state: value.state,
             city: value.city,
             pincode: value.pincode,
@@ -36,7 +39,6 @@ impl From<CreateUserAddressDTO> for CreateUserAddress {
 impl From<CreateUserAddress> for CreateUserAddressDTO {
     fn from(value: CreateUserAddress) -> Self {
         Self {
-            user_id: value.user_id,
             state: value.state,
             city: value.city,
             pincode: value.pincode,

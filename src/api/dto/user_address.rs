@@ -7,7 +7,6 @@ use super::validators::user_address::validate_user_address_fields;
 
 #[derive(Serialize)]
 pub struct CreateUserAddressDTO {
-    pub user_id: Uuid,
     pub state: Option<String>,
     pub city: Option<String>,
     pub pincode: Option<String>,
@@ -37,8 +36,6 @@ pub struct UserAddressDTO {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RawUserAddressDTO {
-    pub id: Option<Uuid>,
-    pub user_id: Uuid,
     pub state: Option<String>,
     pub city: Option<String>,
     pub pincode: Option<String>,
@@ -56,7 +53,6 @@ impl<'de> Deserialize<'de> for CreateUserAddressDTO {
         validate_user_address_fields::<D>()?;
 
         Ok(CreateUserAddressDTO {
-            user_id: raw.user_id,
             state: raw.state,
             city: raw.city,
             pincode: raw.pincode,
