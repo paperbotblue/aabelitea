@@ -51,7 +51,7 @@ impl From<CreateUserAddress> for CreateUserAddressDTO {
 impl From<UpdateUserAddress> for UpdateUserAddressDTO {
     fn from(value: UpdateUserAddress) -> Self {
         Self {
-            state: value.state,
+            state: value.state.unwrap_or("null".to_string()),
             city: value.city,
             pincode: value.pincode,
             house_no: value.house_no,

@@ -16,7 +16,7 @@ pub struct CreateUserAddressDTO {
 
 #[derive(Serialize, Deserialize)]
 pub struct UpdateUserAddressDTO {
-    pub state: Option<String>,
+    pub state: String,
     pub city: Option<String>,
     pub pincode: Option<String>,
     pub house_no: Option<String>,
