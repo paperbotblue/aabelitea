@@ -3,6 +3,7 @@ use std::str::FromStr;
 use uuid::Uuid;
 
 use crate::api::dto::user::{CreateUserDTO, LoginDTO, UpdateUserDTO, UserDTO};
+use crate::api::dto::user_address::UserAddressDTO;
 use crate::domain::error::{ApiError, ApiResponse};
 use crate::domain::models::user_address::CreateUserAddress;
 use crate::domain::repositories::repository::ResultPaging;
@@ -53,7 +54,7 @@ pub async fn login_user_handler(
         "data": {
             "access_token": jwt_token,
             "user_data": UserDTO::from(user),
-            "user_address": user_address
+            "user_address": UserAddressDTO::from( user_address)
         },
         "success": true,
         "statusCode": 200,
