@@ -2,6 +2,7 @@ use crate::api::routes::permission::permission_config;
 use crate::api::routes::role::role_scope;
 use crate::api::routes::todo::todo_config;
 use crate::api::routes::user::user_config;
+use crate::api::routes::user_address::user_address_config;
 use crate::container::Container;
 use crate::utils::log_config::log_format_config;
 use actix_web::body::MessageBody;
@@ -28,6 +29,7 @@ pub fn create_app(
     let role_permission_service = container.role_permission_service.clone();
     let user_service = container.user_service.clone();
     let token_service = container.token_service.clone();
+    let user_address_service = container.user_address_service.clone();
 
     let logger = log_format_config();
 
@@ -38,10 +40,12 @@ pub fn create_app(
         .app_data(web::Data::from(todo_service.clone()))
         .app_data(web::Data::from(user_service.clone()))
         .app_data(web::Data::from(token_service.clone()))
+        .app_data(web::Data::from(user_address_service.clone()))
         .wrap(logger)
         .configure(permission_config)
         .configure(user_config)
         .configure(todo_config)
+        .configure(user_address_config)
         .service(role_scope())
     //.service(todo_scope())
 }

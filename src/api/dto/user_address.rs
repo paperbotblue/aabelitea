@@ -1,0 +1,94 @@
+use chrono::{DateTime, Utc};
+use serde::de::Error as DeError;
+use serde::{Deserialize, Deserializer, Serialize};
+use uuid::Uuid;
+
+use super::validators::user_address::validate_user_address_fields;
+
+#[derive(Serialize)]
+pub struct CreateUserAddressDTO {
+    pub user_id: Uuid,
+    pub state: Option<String>,
+    pub city: Option<String>,
+    pub pincode: Option<String>,
+    pub house_no: Option<String>,
+    pub area: Option<String>,
+}
+
+#[derive(Serialize)]
+pub struct UpdateUserAddressDTO {
+    pub id: Uuid,
+    pub user_id: Uuid,
+    pub state: Option<String>,
+    pub city: Option<String>,
+    pub pincode: Option<String>,
+    pub house_no: Option<String>,
+    pub area: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct UserAddressDTO {
+    pub id: Uuid,
+    pub user_id: Uuid,
+    pub state: Option<String>,
+    pub city: Option<String>,
+    pub pincode: Option<String>,
+    pub house_no: Option<String>,
+    pub area: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RawUserAddressDTO {
+    pub id: Option<Uuid>,
+    pub user_id: Uuid,
+    pub state: Option<String>,
+    pub city: Option<String>,
+    pub pincode: Option<String>,
+    pub house_no: Option<String>,
+    pub area: Option<String>,
+}
+
+impl<'de> Deserialize<'de> for CreateUserAddressDTO {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let raw = RawUserAddressDTO::deserialize(deserializer)?;
+
+        validate_user_address_fields::<D>()?;
+
+        Ok(CreateUserAddressDTO {
+            user_id: raw.user_id,
+            state: raw.state,
+            city: raw.city,
+            pincode: raw.pincode,
+            house_no: raw.house_no,
+            area: raw.area,
+        })
+    }
+}
+
+impl<'de> Deserialize<'de> for UpdateUserAddressDTO {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let raw = RawUserAddressDTO::deserialize(deserializer)?;
+
+        let id = raw
+            .id
+            .ok_or_else(|| D::Error::custom("ID is required for update"))?;
+
+        validate_user_address_fields::<D>()?;
+
+        Ok(UpdateUserAddressDTO {
+            id,
+            user_id: raw.user_id,
+            state: raw.state,
+            city: raw.city,
+            pincode: raw.pincode,
+            house_no: raw.house_no,
+            area: raw.area,
+        })
+    }
+}

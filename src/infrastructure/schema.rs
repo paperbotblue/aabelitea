@@ -51,6 +51,23 @@ diesel::table! {
 }
 
 diesel::table! {
+    user_addresses (id) {
+        id -> Uuid,
+        user_id -> Uuid,
+        #[max_length = 255]
+        state -> Nullable<Varchar>,
+        #[max_length = 255]
+        city -> Nullable<Varchar>,
+        #[max_length = 255]
+        pincode -> Nullable<Varchar>,
+        #[max_length = 255]
+        house_no -> Nullable<Varchar>,
+        #[max_length = 255]
+        area -> Nullable<Varchar>,
+    }
+}
+
+diesel::table! {
     users (id) {
         id -> Uuid,
         #[max_length = 255]
@@ -82,6 +99,7 @@ diesel::table! {
 diesel::joinable!(refresh_tokens -> users (user_id));
 diesel::joinable!(role_permissions -> permissions (permission_id));
 diesel::joinable!(role_permissions -> roles (role_id));
+diesel::joinable!(user_addresses -> users (user_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     permissions,
@@ -89,5 +107,6 @@ diesel::allow_tables_to_appear_in_same_query!(
     role_permissions,
     roles,
     todos,
+    user_addresses,
     users,
 );

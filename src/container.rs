@@ -3,11 +3,12 @@ use crate::{
         repositories::{
             permission::PermissionRepository, refresh_token::RefreshTokenRepository,
             role::RoleRepository, role_permission::RolePermissionRepository, todo::TodoRepository,
-            user::UserRepository,
+            user::UserRepository, user_address::UserAddressRepository,
         },
         services::{
             permission::PermissionService, refresh_token::RefreshTokenService, role::RoleService,
             role_permission::RolePermissionService, todo::TodoService, user::UserService,
+            user_address::UserAddressService,
         },
     },
     infrastructure::{
@@ -16,12 +17,13 @@ use crate::{
             permission::PermissionDieselRepository, refresh_token::RefreshTokenDieselRepository,
             role::RoleDieselRepository, role_permission::RolePermissionDieselRepository,
             todo::TodoDieselRepository, user::UserDieselRepository,
+            user_address::UserAddressDieselRepository,
         },
     },
     services::{
         permission::PermissionServiceImpl, refresh_token::RefreshTokenServiceImpl,
         role::RoleServiceImpl, role_permission::RolePermissionServiceImpl, todo::TodoServiceImpl,
-        user::UserServiceImpl,
+        user::UserServiceImpl, user_address::UserAddressServiceImpl,
     },
 };
 use std::sync::Arc;
@@ -33,6 +35,7 @@ pub struct Container {
     pub role_permission_service: Arc<dyn RolePermissionService>,
     pub user_service: Arc<dyn UserService>,
     pub token_service: Arc<dyn RefreshTokenService>,
+    pub user_address_service: Arc<dyn UserAddressService>,
 }
 
 impl Container {
@@ -74,6 +77,11 @@ impl Container {
         let token_service = Arc::new(RefreshTokenServiceImpl {
             repository: token_service,
         });
+        let user_address_service: Arc<dyn UserAddressRepository> =
+            Arc::new(UserAddressDieselRepository::new(pool.clone()));
+        let user_address_service = Arc::new(UserAddressServiceImpl {
+            repository: user_address_service,
+        });
 
         Container {
             role_permission_service,
@@ -82,6 +90,7 @@ impl Container {
             todo_service,
             user_service,
             token_service,
+            user_address_service,
         }
     }
 }
