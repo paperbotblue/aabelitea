@@ -14,7 +14,7 @@ pub struct CreateUserAddressDTO {
     pub area: Option<String>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct UpdateUserAddressDTO {
     pub state: Option<String>,
     pub city: Option<String>,
@@ -53,25 +53,6 @@ impl<'de> Deserialize<'de> for CreateUserAddressDTO {
         validate_user_address_fields::<D>()?;
 
         Ok(CreateUserAddressDTO {
-            state: raw.state,
-            city: raw.city,
-            pincode: raw.pincode,
-            house_no: raw.house_no,
-            area: raw.area,
-        })
-    }
-}
-
-impl<'de> Deserialize<'de> for UpdateUserAddressDTO {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let raw = RawUserAddressDTO::deserialize(deserializer)?;
-
-        validate_user_address_fields::<D>()?;
-
-        Ok(UpdateUserAddressDTO {
             state: raw.state,
             city: raw.city,
             pincode: raw.pincode,
